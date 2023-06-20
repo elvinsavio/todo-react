@@ -5,6 +5,8 @@ import Form from '../components/ui/form/form';
 import { Button } from '../components/button/button';
 import { AnimatePresence } from 'framer-motion';
 
+import { login as loginApi } from '../utils/apis';
+
 interface ILogin {
   username: string;
   password: string;
@@ -38,6 +40,14 @@ export default function Login() {
     showCPassword: false,
   });
 
+  const handleLoginIn = () => {
+    loginApi(login.username, login.password).then((res) => {
+      if (res.data.data.token) {
+        localStorage.setItem('token', res.data.data.token);
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen bg-neutral-800 text-white flex items-center justify-center">
       <div className="bg-black bg-opacity-50 rounded-lg shadow-lg overflow-hidden">
@@ -51,7 +61,7 @@ export default function Login() {
           </Tabs.Header>
         </Tabs>
         <AnimatePresence>
-          {tab === 'login' && <LoginForm login={login} setLogin={setLogin} />}
+          {tab === 'login' && <LoginForm login={login} setLogin={setLogin} onSubmit={handleLoginIn} />}
           {tab === 'signup' && <SignupForm signup={signup} setSignup={setSignup} />}
         </AnimatePresence>
       </div>
@@ -62,8 +72,9 @@ export default function Login() {
 interface LoginFormProps {
   login: ILogin;
   setLogin: React.Dispatch<React.SetStateAction<ILogin>>;
+  onSubmit: () => void;
 }
-const LoginForm = ({ login, setLogin }: LoginFormProps) => {
+const LoginForm = ({ login, setLogin, onSubmit }: LoginFormProps) => {
   return (
     <Form animate={1}>
       <Input
@@ -81,7 +92,7 @@ const LoginForm = ({ login, setLogin }: LoginFormProps) => {
         placeholder="Password"
       />
       <div className="flex">
-        <Button.Submit onClick={() => console.log('click')} />
+        <Button.Submit onClick={onSubmit} />
       </div>
     </Form>
   );
