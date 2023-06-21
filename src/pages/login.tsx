@@ -10,6 +10,8 @@ import { login as loginApi } from '../utils/apis';
 interface ILogin {
   username: string;
   password: string;
+  error: boolean;
+  errorMessage: string;
   showPassword: boolean;
 }
 
@@ -17,17 +19,25 @@ interface ISignup {
   username: string;
   password: string;
   cPassword: string;
+  error: boolean;
+  errorMessage: string;
   showPassword: boolean;
   showCPassword: boolean;
 }
 
 type tab = 'login' | 'signup';
 
-export default function Login() {
+interface LoginProps {
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export default function Login({ setIsLoggedIn }: LoginProps) {
   const [tab, setTab] = useState<tab>('login');
 
   const [login, setLogin] = useState<ILogin>({
     username: '',
+    error: false,
+    errorMessage: '',
     password: '',
     showPassword: false,
   });
@@ -36,6 +46,8 @@ export default function Login() {
     username: '',
     password: '',
     cPassword: '',
+    error: false,
+    errorMessage: '',
     showPassword: false,
     showCPassword: false,
   });
@@ -44,6 +56,7 @@ export default function Login() {
     loginApi(login.username, login.password).then((res) => {
       if (res.data.data.token) {
         localStorage.setItem('token', res.data.data.token);
+        setIsLoggedIn(true);
       }
     });
   };

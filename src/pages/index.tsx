@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { Button } from '../components/button/button';
+import { useEffect, useState } from 'react';
+import Home from './home';
 import Login from './login';
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-  if (!isLoggedIn) return <Login />;
-  return (
-    <div className="bg-slate-700 min-h-screen text-white flex justify-center items-center">
-      <Button label="Hello World" />
-    </div>
-  );
+  useEffect(() => {
+    if (localStorage.getItem('token')) setIsLoggedIn(true);
+  }, []);
+
+  if (!isLoggedIn) return <Login setIsLoggedIn={setIsLoggedIn} />;
+  return <Home />;
 }
