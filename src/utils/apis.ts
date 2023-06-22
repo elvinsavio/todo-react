@@ -41,3 +41,22 @@ export const getTodo = async <T>(): Promise<T> => {
 
   return axios.request(config);
 };
+
+export const updateTodo = async <T>(id: number, completed: T): Promise<T> => {
+  let data = JSON.stringify({
+    completed: completed,
+  });
+
+  let config = {
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: `${url}/todo/update/${id}`,
+    headers: {
+      Authorization: await getToken(),
+      'Content-Type': 'application/json',
+    },
+    data: data,
+  };
+
+  return axios.request(config);
+};

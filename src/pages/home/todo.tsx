@@ -1,42 +1,62 @@
 import { useEffect, useState } from 'react';
-import { getTodo } from '../../utils/apis';
+import { getTodo, updateTodo } from '../../utils/apis';
+import { format } from 'date-fns';
 
-interface ITodo {
+import TodoWrapper from '../../components/ui/todo/todoWrapper';
+
+export interface ITodo {
   id: number;
   title: string;
   completed: boolean;
   createdAt: string;
   updatedAt: string;
+  loading: boolean;
+}
+
+interface State {
+  todos: ITodo[];
+  doing: ITodo[];
+  done: ITodo[];
 }
 
 interface ITodoResponse {
-  data: { data: { todo: ITodo[] } };
+  data: { data: { todo: ITodo[]; doing: ITodo[]; done: ITodo[] } };
 }
 
 export default function Todo() {
-  const [todo, setTodo] = useState<ITodo[]>([]);
+  const [state, setState] = useState<State>();
 
   useEffect(() => {
     getTodo<ITodoResponse>().then((res) => {
-      setTodo(res.data.data.todo);
+      setState({
+        todos: res.data.data.todo,
+        doing: res.data.data.doing,
+        done: res.data.data.done,
+      });
     });
   }, []);
-  return (
-    <div className="flex flex-col gap-2 mt-1">
-      {todo.map((t) => {
-        return <TodoItem key={t.id} t={t} />;
-      })}
-    </div>
-  );
-}
 
-interface ITodoItemProps {
-  t: ITodo;
-}
-const TodoItem = ({ t }: ITodoItemProps) => {
   return (
-    <div className="p-2 rounded mx-2 bg-neutral-900 flex gap-2">
-      <label className="cursor-pointer select-none">Checkbox</label>
-    </div>
+    <TodoWrapper>
+      <TodoWrapper.col>
+        <h1>Todo</h1>
+        {state?.todos.map((t) => {
+          return <TodoWrapper.item key={t.id} t={t} />;
+        })}
+      </TodoWrapper.col>
+      <TodoWrapper.col>
+        <h1>doing</h1>
+        {state?.doing.map((t) => {
+          return <TodoWrapper.item key={t.id} t={t} />;
+        })}
+      </TodoWrapper.col>
+
+      <TodoWrapper.col>
+        <h1>doing</h1>
+        {state?.done.map((t) => {
+          return <TodoWrapper.item key={t.id} t={t} />;
+        })}
+      </TodoWrapper.col>
+    </TodoWrapper>
   );
-};
+}
